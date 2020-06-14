@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8">
+		<title>宜居性</title>
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+		<style>
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				padding: 0;
+			}
+
+			#map_container {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+			}
+		</style>
+		<link rel="stylesheet" type="text/css" href="https://api.map.baidu.com/res/webgl/10/bmap.css">
+		<script src="https://api.map.baidu.com/api?v=1.0&type=webgl&ak=Pcsg8lnesw8tS9hcziAo6FOI7LsADxUs"></script>
+		<script src="https://mapv.baidu.com/gl/examples/static/mapv.min.js"></script>
+		<script src="https://mapv.baidu.com/gl/examples/static/common.js"></script>
+		<script src="https://code.bdstatic.com/npm/mapvgl@1.0.0-beta.58/dist/mapvgl.min.js"></script>
+	</head>
+	<body>
+		<div id="map_container"></div>
+		<script>
+			/* global BMapGL */
+			/* global mapv */
+			/* global mapvgl */
+			/* global initMap */
+			/* global whiteStyle */
+			/* global purpleStyle */
+
+			var map = initMap({
+				tilt: 50.4,
+				heading: 0,
+				center: [120.74724, 31.27924],
+				zoom: 5,
+				style: darkStyle,
+				skyColors: [
+					// 地面颜色
+					'rgba(226, 237, 248, 0)',
+					// 天空颜色
+					'rgba(186, 211, 252, 1)'
+				]
+			});
+
+			var point = new BMapGL.Point(120.74724, 31.27924);
+			map.centerAndZoom(point, 11);
+
+			var view = new mapvgl.View({
+				effects: [
+					new mapvgl.BloomEffect({
+						threshold: 0.2,
+						blurSize: 2.0
+					}),
+				],
+				map: map
+			});
+
+			// 获取全部数据
+			var all_result = [];
+			fetch('https://img.lbjheiheihei.xyz/all.csv').then(function(rs) {
+				return rs.text();
+			}).then(function(rs) {
+				rs = rs.split('\n');
+				for (var i = 0; i < rs.length; i++) {
+					var line = rs[i].split(',');
+					all_result.push(line);
+				}
+				//draw();
+			});
+
+			// 获取 bus 数据
+			var bus_result = [];
+			fetch('https://img.lbjheiheihei.xyz/bus.csv').then(function(rs) {
+				return rs.text();
+			}).then(function(rs) {
+				rs = rs.split('\n');
+				for (var i = 0; i < rs.length; i++) {
+					var line = rs[i].split(',');
+					bus_result.push(line);
+				}
+				//draw();
+			});
+
+			// 获取 lib 数据
+			var lib_result = [];
+			fetch('https://img.lbjheiheihei.xyz/lib.csv').then(function(rs) {
+				return rs.text();
+			}).then(function(rs) {
+				rs = rs.split('\n');
+				for (var i = 0; i < rs.length; i++) {
+					var line = rs[i].split(',');
+					lib_result.push(line);
+				}
+				//draw();
+			});
+
+			// 获取 metro 数据
+			var metro_result = [];
+			fetch('https://img.lbjheiheihei.xyz/metro.csv').then(function(rs) {
+				return rs.text();
+			}).then(function(rs) {
+				rs = rs.split('\n');
+				for (var i = 0; i < rs.length; i++) {
+					var line = rs[i].split(',');
+					metro_result.push(line);
+				}
+				//draw();
+			});
+
+			// 获取 park 数据
+			var park_result = [];
+			fetch('https://img.lbjheiheihei.xyz/park.csv').then(function(rs) {
+				return rs.text();
+			}).then(function(rs) {
+				rs = rs.split('\n');
+				for (var i = 0; i < rs.length; i++) {
+					var line = rs[i].split(',');
+					park_result.push(line);
+				}
+				//draw();
+			});
+
+			// 获取 school 数据
+			var school_result = [];
+			fetch('https://img.lbjheiheihei.xyz/school.csv').then(function(rs) {
+				return rs.text();
+			}).then(function(rs) {
+				rs = rs.split('\n');
+				for (var i = 0; i < rs.length; i++) {
+					var line = rs[i].split(',');
+					school_result.push(line);
+				}
+				//draw();
+			});
+
+			// 获取 supermarket 数据
+			var supermarket_result = [];
+			fetch('https://img.lbjheiheihei.xyz/supermarket.csv').then(function(rs) {
+				return rs.text();
+			}).then(function(rs) {
+				rs = rs.split('\n');
+				for (var i = 0; i < rs.length; i++) {
+					var line = rs[i].split(',');
+					supermarket_result.push(line);
+				}
+				draw();
+			});
+
+
+
+			function draw() {
+				// 全部数据的气泡图
+				var all_data = [];
+				for (var i = 0; i <= all_result.length - 1; i++) {
+					var line = all_result[i];
+					all_data.push({
+						geometry: {
+							type: 'POINT',
+							coordinates: [line[3], line[2]]
+						},
+						properties: {
+							text: line[0]
+						}
+					});
+				}
+
+				// bus 数据的气泡图
+				var bus_data = [];
+				for (var i = 0; i <= bus_result.length - 1; i++) {
+					var line = bus_result[i];
+					bus_data.push({
+						geometry: {
+							type: 'POINT',
+							coordinates: [line[3], line[2]]
+						},
+						properties: {
+							text: line[0]
+						}
+					});
+				}
+
+				// lib 数据的气泡图
+				var lib_data = [];
+				for (var i = 0; i <= lib_result.length - 1; i++) {
+					var line = lib_result[i];
+					lib_data.push({
+						geometry: {
+							type: 'POINT',
+							coordinates: [line[3], line[2]]
+						},
+						properties: {
+							text: line[0]
+						}
+					});
+				}
+
+
+				// metro 数据的气泡图
+				var metro_data = [];
+				for (var i = 0; i <= metro_result.length - 1; i++) {
+					var line = metro_result[i];
+					metro_data.push({
+						geometry: {
+							type: 'POINT',
+							coordinates: [line[3], line[2]]
+						},
+						properties: {
+							text: line[0]
+						}
+					});
+				}
+
+				// park 数据的气泡图
+				var park_data = [];
+				for (var i = 0; i <= park_result.length - 1; i++) {
+					var line = park_result[i];
+					park_data.push({
+						geometry: {
+							type: 'POINT',
+							coordinates: [line[3], line[2]]
+						},
+						properties: {
+							text: line[0]
+						}
+					});
+				}
+
+				// school 数据的气泡图
+				var school_data = [];
+				for (var i = 0; i <= school_result.length - 1; i++) {
+					var line = school_result[i];
+					school_data.push({
+						geometry: {
+							type: 'POINT',
+							coordinates: [line[3], line[2]]
+						},
+						properties: {
+							text: line[0]
+						}
+					});
+				}
+
+				// supermarket 数据的气泡图
+				var supermarket_data = [];
+				for (var i = 0; i <= supermarket_result.length - 1; i++) {
+					var line = supermarket_result[i];
+					supermarket_data.push({
+						geometry: {
+							type: 'POINT',
+							coordinates: [line[3], line[2]]
+						},
+						properties: {
+							text: line[0]
+						}
+					});
+				}
+
+				// 显示全部数据的气泡图
+				var pointLayer = new mapvgl.PointLayer({
+					blend: 'lighter',
+					size: 50, // 气泡图的大小
+					color: 'rgba(89, 0, 179,0.6)'
+				});
+
+				view.addLayer(pointLayer);
+				pointLayer.setData(all_data);
+
+				// 显示全部数据的文字
+				var textLayer = new mapvgl.TextLayer({
+					color: '#ff0'
+				});
+
+				view.addLayer(textLayer);
+				// 注释掉下面这一行就是不显示文字
+				//textLayer.setData(all_data);
+
+				//  bus 的 icon
+				var bus_layer = new mapvgl.IconLayer({
+					width: 40,
+					height: 40,
+					offset: [0, -153 / 2 / 2],
+					icon: 'https://img.lbjheiheihei.xyz/bus.svg',
+					enablePicked: true, // 是否可以拾取
+					selectedIndex: -1, // 选中项
+					selectedColor: '#15CAE2', // 选中项颜色
+					autoSelect: true, // 根据鼠标位置来自动设置选中项
+					onClick: (e) => { // 点击事件
+						console.log(e);
+					},
+				});
+				view.addLayer(bus_layer);
+				bus_layer.setData(bus_data);
+
+				//  lib 的 icon
+				var lib_layer = new mapvgl.IconLayer({
+					width: 40,
+					height: 40,
+					offset: [0, -153 / 2 / 2],
+					icon: 'https://img.lbjheiheihei.xyz/lib.svg',
+					enablePicked: true, // 是否可以拾取
+					selectedIndex: -1, // 选中项
+					selectedColor: '#15CAE2', // 选中项颜色
+					autoSelect: true, // 根据鼠标位置来自动设置选中项
+					onClick: (e) => { // 点击事件
+						console.log(e);
+					},
+				});
+				view.addLayer(lib_layer);
+				lib_layer.setData(lib_data);
+
+				//  metro 的 icon
+				var metro_layer = new mapvgl.IconLayer({
+					width: 40,
+					height: 40,
+					offset: [0, -153 / 2 / 2],
+					icon: 'https://img.lbjheiheihei.xyz/metro.svg',
+					enablePicked: true, // 是否可以拾取
+					selectedIndex: -1, // 选中项
+					selectedColor: '#15CAE2', // 选中项颜色
+					autoSelect: true, // 根据鼠标位置来自动设置选中项
+					onClick: (e) => { // 点击事件
+						console.log(e);
+					},
+				});
+				view.addLayer(metro_layer);
+				metro_layer.setData(metro_data);
+
+				//  park 的 icon
+				var park_layer = new mapvgl.IconLayer({
+					width: 40,
+					height: 40,
+					offset: [0, -153 / 2 / 2],
+					icon: 'https://img.lbjheiheihei.xyz/park.svg',
+					enablePicked: true, // 是否可以拾取
+					selectedIndex: -1, // 选中项
+					selectedColor: '#15CAE2', // 选中项颜色
+					autoSelect: true, // 根据鼠标位置来自动设置选中项
+					onClick: (e) => { // 点击事件
+						console.log(e);
+					},
+				});
+				view.addLayer(park_layer);
+				park_layer.setData(park_data);
+
+				//  school 的 icon
+				var school_layer = new mapvgl.IconLayer({
+					width: 40,
+					height: 40,
+					offset: [0, -153 / 2 / 2],
+					icon: 'https://img.lbjheiheihei.xyz/school.svg',
+					enablePicked: true, // 是否可以拾取
+					selectedIndex: -1, // 选中项
+					selectedColor: '#15CAE2', // 选中项颜色
+					autoSelect: true, // 根据鼠标位置来自动设置选中项
+					onClick: (e) => { // 点击事件
+						console.log(e);
+					},
+				});
+				view.addLayer(school_layer);
+				school_layer.setData(school_data);
+
+				//  supermarket 的 icon
+				var supermarket_layer = new mapvgl.IconLayer({
+					width: 40,
+					height: 40,
+					offset: [0, -153 / 2 / 2],
+					icon: 'https://img.lbjheiheihei.xyz/supermarket.svg',
+					enablePicked: true, // 是否可以拾取
+					selectedIndex: -1, // 选中项
+					selectedColor: '#15CAE2', // 选中项颜色
+					autoSelect: true, // 根据鼠标位置来自动设置选中项
+					onClick: (e) => { // 点击事件
+						console.log(e);
+					},
+				});
+				view.addLayer(supermarket_layer);
+				supermarket_layer.setData(supermarket_data);
+				//console.log(data)
+			}
+		</script>
+	</body>
+</html>
